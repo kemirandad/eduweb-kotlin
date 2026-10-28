@@ -10,7 +10,15 @@ Plataforma Next.js para recorrer 15 niveles de Android nativo con Kotlin. Esta f
 
 Next.js 16 necesita Node.js 20.9 o superior.
 
-El progreso se sincroniza con PostgreSQL y mantiene una copia local para la interfaz. En desarrollo local se crea una identidad guest en una cookie HttpOnly; esta identidad está deshabilitada en producción hasta configurar GitHub OAuth.
+El progreso se sincroniza con PostgreSQL y mantiene una copia local para la interfaz. En desarrollo local se crea una identidad guest en una cookie HttpOnly. En producción se usa Auth.js con GitHub OAuth y cada cuenta se vincula a un usuario de PostgreSQL.
+
+## Autenticación y despliegue
+
+- Configura `AUTH_SECRET`, `AUTH_GITHUB_ID` y `AUTH_GITHUB_SECRET` en `.env.local` y en el proveedor de hosting. Genera el secreto local con `npx auth secret`.
+- Registra una OAuth App de GitHub para desarrollo con callback `http://localhost:3000/api/auth/callback/github` y otra para producción con callback `https://TU_DOMINIO/api/auth/callback/github`.
+- En producción, configura también `DATABASE_URL`, `AI_PROVIDER`, `GEMINI_API_KEY` y `GEMINI_MODEL`. Nunca expongas estos secretos con prefijo `NEXT_PUBLIC_` ni los subas al repositorio.
+- Aplica el esquema a la base remota con `npx prisma db push` durante la primera preparación y luego publica desde la rama `main`.
+- La vista previa Compose requiere un worker externo y aislado. Déjala sin configurar hasta desplegar ese worker; `localhost:9000` solo sirve para desarrollo local.
 
 ## Ejecución de código
 

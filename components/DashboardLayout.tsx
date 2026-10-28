@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Sidebar } from "./Sidebar";
 import { ProgressSync } from "@/components/roadmap/ProgressSync";
 import { useRoadmapStore } from "@/lib/roadmap-store";
+import { AuthControl } from "@/components/AuthControl";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -23,10 +24,11 @@ export function DashboardLayout({ children, eyebrow = "TU ESPACIO DE APRENDIZAJE
       <ProgressSync />
       <div className="relative z-30 flex items-center justify-between border-b border-white/[0.07] px-5 py-3 lg:hidden">
         <Link href="/" className="font-heading text-sm font-bold tracking-tight">KOTLIN<span className="text-ferxxo-green">/</span>UP</Link>
-        <nav aria-label="Navegación móvil" className="flex gap-4 text-[11px] text-text-secondary">
+        <nav aria-label="Navegación móvil" className="flex items-center gap-4 text-[11px] text-text-secondary">
           <Link href="/" className="hover:text-ferxxo-green">Inicio</Link>
           <Link href="/roadmap" className="hover:text-ferxxo-green">Roadmap</Link>
           <Link href="/code" className="hover:text-ferxxo-green">Code Lab</Link>
+          <AuthControl compact />
         </nav>
       </div>
       <main className="relative min-h-screen pl-0 lg:pl-[282px]">

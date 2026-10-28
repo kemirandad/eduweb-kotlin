@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { roadmap } from "@/data/roadmap";
 import { useRoadmapStore } from "@/lib/roadmap-store";
+import { AuthControl } from "@/components/AuthControl";
 
 const primaryLinks = [
   { label: "Overview", href: "/", icon: "◫" },
@@ -95,11 +96,7 @@ export function Sidebar() {
           <p className="font-heading text-2xl font-bold text-text-primary">4 <span className="text-sm font-medium text-text-secondary">días</span></p>
           <p className="mt-1 text-[10px] leading-relaxed text-text-secondary">Un paso constante te acerca a tu primer proyecto freelance.</p>
         </div>
-        <button className="mt-3 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/[0.04]" type="button">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-ferxxo-dark to-accent-purple/70 text-xs font-bold text-white">U</span>
-          <span className="min-w-0 flex-1"><span className="block truncate text-xs font-semibold text-text-primary">Tu perfil</span><span className="block text-[10px] text-text-secondary">Docente · En formación</span></span>
-          <span className="text-text-secondary">···</span>
-        </button>
+        <AuthControl />
       </div>
     </motion.aside>
   );

@@ -1,12 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 const GUEST_COOKIE = "kotlin_up_guest";
 
 export async function getCurrentUser() {
-  // Guest identities are deliberately development-only. Production must use OAuth/session auth.
-  if (process.env.NODE_ENV === "production") return null;
+  if (process.env.NODE_ENV === "production") {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) return null;
+    return prisma.user.findUnique({ where: { id: userId } });
+  }
 
   const cookieStore = await cookies();
   const existingId = cookieStore.get(GUEST_COOKIE)?.value;
