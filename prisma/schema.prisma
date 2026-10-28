@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LevelStatus {
+  LOCKED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id               String            @id @default(cuid())
+  githubId         String            @unique @map("github_id")
+  email            String            @unique
+  name             String?
+  avatar           String?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  levelProgress    LevelProgress[]
+  notes            Note[]
+  codeSubmissions  CodeSubmission[]
+  pomodoroSessions PomodoroSession[]
+
+  @@map("users")
+}
+
+model RoadmapLevel {
+  id            Int             @id
+  title         String
+  slug          String          @unique
+  summary       String
+  order         Int             @unique
+  levelProgress LevelProgress[]
+  notes         Note[]
+  submissions   CodeSubmission[]
+
+  @@map("roadmap_levels")
+}
+
+model LevelProgress {
+  id             String      @id @default(cuid())
+  userId         String      @map("user_id")
+  levelId        Int         @map("level_id")
+  status         LevelStatus @default(LOCKED)
+  checklistState Json        @default("[]") @map("checklist_state")
+  completedAt    DateTime?   @map("completed_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level          RoadmapLevel @relation(fields: [levelId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, levelId])
+  @@index([userId, status])
+  @@map("level_progress")
+}
+
+model Note {
+  id        String      @id @default(cuid())
+  userId    String      @map("user_id")
+  levelId   Int         @map("level_id")
+  content   String      @default("") @db.Text
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level     RoadmapLevel @relation(fields: [levelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, levelId])
+  @@map("notes")
+}
+
+model CodeSubmission {
+  id             String       @id @default(cuid())
+  userId         String       @map("user_id")
+  levelId        Int          @map("level_id")
+  code           String       @db.Text
+  evidence       String?      @db.Text
+  mentorQuestion String?      @map("mentor_question") @db.Text
+  aiFeedback     String?      @map("ai_feedback") @db.Text
+  isApproved     Boolean      @default(false) @map("is_approved")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level          RoadmapLevel @relation(fields: [levelId], references: [id], onDelete: Cascade)
+
+  @@index([userId, levelId, createdAt])
+  @@map("code_submissions")
+}
+
+model PomodoroSession {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  duration    Int
+  completedAt DateTime @default(now()) @map("completed_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, completedAt])
+  @@map("pomodoro_sessions")
+}
